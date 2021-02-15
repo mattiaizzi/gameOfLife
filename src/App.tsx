@@ -1,6 +1,8 @@
 import React from 'react';
 import { Cell, CellStatus } from './core/cell';
 import { Game } from './core/game/Game';
+import { Grid } from './components/Grid';
+import { Cell as CellComponent } from './components/Cell';
 
 function App() {
   const game: Game = new Game(4, 8);
@@ -74,6 +76,12 @@ function App() {
   return (
     <div>
       <h1>Game of life</h1>
+      <Grid
+        matrix={game
+          .getGrid()
+          .getField()
+          .map((row, i) => row.map((cell, j) => <CellComponent key={`${i}-${j}`} alive={cell.isAlive()} />))}
+      ></Grid>
     </div>
   );
 }
