@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Cell, CellStatus } from '../../core/cell';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { Cell } from '../../core/cell';
 import { Game } from '../../core/game/Game';
 import { handleFile } from '../../utils/handleFile';
 import { Grid } from '../Grid';
@@ -7,23 +7,33 @@ import { Cell as CellComponent } from '../Cell';
 import { InputFile } from '../InputFile';
 import './style.css';
 import { Button } from '../Button';
+import { ErrorContext } from '../../context/ErrorContext/ErrorContext';
 
 const Main: React.FC = () => {
+  const { setError } = useContext(ErrorContext);
   const [game, setGame] = useState<Game | null>(null);
   const playID = useRef<any>(null);
 
   const onFileChange = (files: FileList) => {
     let generation: number;
     let matrix: Cell[][];
-    handleFile(files, (m, g) => {
-      generation = g;
-      matrix = m;
-      setGame(() => {
-        const newGame: Game = new Game(4, 8);
-        newGame.updateGenerationState(matrix, 3);
-        return newGame;
-      });
-    });
+    handleFile(
+      files,
+      (m, g) => {
+        generation = g;
+        matrix = m;
+        setGame(() => {
+          const newGame: Game = new Game(4, 8);
+          newGame.updateGenerationState(matrix, 3);
+          return newGame;
+        });
+      },
+      (e) => {
+        if (setError) {
+          setError(e);
+        }
+      },
+    );
   };
 
   const onNextGenerationClick = () => {

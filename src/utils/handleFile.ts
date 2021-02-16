@@ -1,13 +1,21 @@
 import { Cell, CellStatus } from '../core/cell';
 
-export const handleFile = (files: FileList, callback: (matrix: Cell[][], generation: number) => void) => {
+export const handleFile = (
+  files: FileList,
+  callback: (matrix: Cell[][], generation: number) => void,
+  errorCallback: (error: Error) => void,
+) => {
   const file = files[0];
   const fileReader = new FileReader();
   fileReader.onloadend = () => {
-    const content = fileReader.result;
-    if (content && typeof content === 'string') {
-      const { matrix, generation } = parseContent(content);
-      callback(matrix, generation);
+    try {
+      const content = fileReader.result;
+      if (content && typeof content === 'string') {
+        const { matrix, generation } = parseContent(content);
+        callback(matrix, generation);
+      }
+    } catch (error) {
+      errorCallback(error);
     }
   };
   fileReader.readAsText(file);
@@ -39,15 +47,15 @@ const getInitialState = (configuration: string[], rows: number, columns: number)
   if (configuration.length !== rows) {
     throw new Error('Invalid rows dimension');
   }
-  configuration.forEach((l, index) => {
-    matrix[index] = [];
-    const line = l.trim();
+  for (let i = 0; i < configuration.length; i += 1) {
+    matrix[i] = [];
+    const line = configuration[i].trim();
     if (columns !== line.length) {
       throw new Error('Invalid columns dimension');
     }
-    for (let i = 0; i < line.length; i += 1) {
-      matrix[index][i] = new Cell(line[i] === '.' ? CellStatus.DEAD : CellStatus.ALIVE);
+    for (let j = 0; j < line.length; j += 1) {
+      matrix[i][j] = new Cell(line[j] === '.' ? CellStatus.DEAD : CellStatus.ALIVE);
     }
-  });
+  }
   return matrix;
 };
