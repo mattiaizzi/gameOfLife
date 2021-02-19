@@ -3,14 +3,17 @@ import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 
 import { Main } from './components/Main';
 import { ErrorProvider } from './context/ErrorContext/ErrorContext';
+import { ModalProvider } from './context/ModalContext/ModalContext';
 
 function App() {
   return (
-    <ErrorProvider>
-      <ErrorBoundary>
-        <Main />
-      </ErrorBoundary>
-    </ErrorProvider>
+    <ModalProvider>
+      <ErrorProvider>
+        <ErrorBoundary>
+          <Main />
+        </ErrorBoundary>
+      </ErrorProvider>
+    </ModalProvider>
   );
 }
 

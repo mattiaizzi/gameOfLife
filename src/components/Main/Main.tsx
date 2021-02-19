@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { Cell } from '../../core/cell';
 import { Game } from '../../core/game/Game';
 import { handleFile } from '../../utils/handleFile';
@@ -77,12 +77,14 @@ const Main: React.FC = () => {
                 .map((row, i) => row.map((cell, j) => <CellComponent key={`${i}-${j}`} alive={cell.isAlive()} />))}
             ></Grid>
           </div>
-          <div>
+          <div className="content">
             <h3>Current generation: {game.getCurrentGeneration()}</h3>
-            <Button onClick={onNextGenerationClick}>one step</Button>
-            <Button onClick={play}>play</Button>
-            <Button onClick={stop}>stop</Button>
-            <InputFile onChange={onFileChange}>upload</InputFile>
+            <div className="buttons">
+              <Button onClick={onNextGenerationClick}>one step</Button>
+              <Button onClick={play}>play</Button>
+              <Button onClick={stop}>stop</Button>
+              <InputFile onChange={onFileChange}>upload</InputFile>
+            </div>
           </div>
         </div>
       )}

@@ -1,27 +1,24 @@
 import React from 'react';
 import { ErrorContext } from '../../context/ErrorContext/ErrorContext';
+import ErrorWrapper from './ErrorWrapper';
 
-interface ErrorBoundaryState {
-  hasError: boolean;
-  error: Error | null;
-}
-
-class ErrorBoundary extends React.Component<any, ErrorBoundaryState> {
+class ErrorBoundary extends React.Component<any, any> {
   static contextType = ErrorContext;
   context!: React.ContextType<typeof ErrorContext>;
 
   constructor(props: any) {
     super(props);
-    this.state = { hasError: false, error: null };
   }
 
   componentDidCatch(error: Error) {
-    this.setState({ hasError: true, error });
+    if (this.context.setError) {
+      this.context.setError(error);
+    }
   }
 
   render() {
-    if (this.state.hasError || this.context.error) {
-      return <h1>{this.state.error?.message || this.context.error?.message}</h1>;
+    if (this.context.error) {
+      return <ErrorWrapper message={this.context.error?.message} />;
     }
     return this.props.children;
   }
