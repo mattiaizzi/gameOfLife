@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useReducer, useRef, useState } from 'react';
 import { Cell } from '../../core/cell';
 import { Game } from '../../core/game/Game';
 import { handleFile } from '../../utils/handleFile';
@@ -9,7 +9,48 @@ import './style.css';
 import { Button } from '../Button';
 import { ErrorContext } from '../../context/ErrorContext/ErrorContext';
 
+type ButtonState = {
+  isOneStepEnabled: boolean;
+  isPlayEnabled: boolean;
+  isStopEnabled: boolean;
+  isUploadEnabled: boolean;
+};
+
+type Action = { type: 'oneStep' } | { type: 'play' } | { type: 'stop' };
+
+const reducer = (state: ButtonState, action: Action): ButtonState => {
+  switch (action.type) {
+    case 'oneStep':
+      return {
+        isOneStepEnabled: true,
+        isPlayEnabled: true,
+        isStopEnabled: false,
+        isUploadEnabled: true,
+      };
+    case 'play':
+      return {
+        isOneStepEnabled: false,
+        isPlayEnabled: true,
+        isStopEnabled: true,
+        isUploadEnabled: false,
+      };
+    case 'stop':
+      return {
+        isOneStepEnabled: true,
+        isPlayEnabled: true,
+        isStopEnabled: false,
+        isUploadEnabled: true,
+      };
+  }
+};
+
 const Main: React.FC = () => {
+  const [{ isOneStepEnabled, isUploadEnabled, isStopEnabled, isPlayEnabled }, dispatch] = useReducer(reducer, {
+    isOneStepEnabled: true,
+    isPlayEnabled: true,
+    isStopEnabled: false,
+    isUploadEnabled: true,
+  });
   const { setError } = useContext(ErrorContext);
   const [game, setGame] = useState<Game | null>(null);
   const playID = useRef<any>(null);
@@ -37,6 +78,11 @@ const Main: React.FC = () => {
   };
 
   const onNextGenerationClick = () => {
+    dispatch({ type: 'oneStep' });
+    makeOneStep();
+  };
+
+  const makeOneStep = () => {
     if (game) {
       setGame((oldGame) => {
         if (oldGame) {
@@ -50,10 +96,12 @@ const Main: React.FC = () => {
   };
 
   const play = () => {
-    playID.current = setInterval(onNextGenerationClick, 1000);
+    dispatch({ type: 'play' });
+    playID.current = setInterval(makeOneStep, 1000);
   };
 
   const stop = () => {
+    dispatch({ type: 'stop' });
     clearInterval(playID.current);
   };
 
@@ -80,10 +128,18 @@ const Main: React.FC = () => {
           <div className="content">
             <h3>Current generation: {game.getCurrentGeneration()}</h3>
             <div className="buttons">
-              <Button onClick={onNextGenerationClick}>one step</Button>
-              <Button onClick={play}>play</Button>
-              <Button onClick={stop}>stop</Button>
-              <InputFile onChange={onFileChange}>upload</InputFile>
+              <Button disabled={!isOneStepEnabled} onClick={onNextGenerationClick}>
+                one step
+              </Button>
+              <Button disabled={!isPlayEnabled} onClick={play}>
+                play
+              </Button>
+              <Button disabled={!isStopEnabled} onClick={stop}>
+                stop
+              </Button>
+              <InputFile disabled={!isUploadEnabled} onChange={onFileChange}>
+                upload
+              </InputFile>
             </div>
           </div>
         </div>

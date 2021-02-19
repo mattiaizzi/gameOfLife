@@ -30,4 +30,9 @@ export default styled.button<ButtonProps>`
   &:focus {
     outline: 0;
   }
+  &:disabled {
+    border: 1px solid #999999;
+    background-color: #cccccc;
+    color: #666666;
+  }
 `;

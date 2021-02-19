@@ -3,9 +3,10 @@ import { Button } from '../Button';
 
 interface InputFileProps {
   onChange: (files: FileList) => void;
+  disabled?: boolean;
 }
 
-const InputFile: React.FC<InputFileProps> = ({ onChange, children }) => {
+const InputFile: React.FC<InputFileProps> = ({ onChange, children, disabled = false }) => {
   const inputFileRef = useRef<HTMLInputElement | null>(null);
 
   const handleFiles: ChangeEventHandler<HTMLInputElement> = (event) => {
@@ -21,6 +22,7 @@ const InputFile: React.FC<InputFileProps> = ({ onChange, children }) => {
   return (
     <React.Fragment>
       <Button
+        disabled={disabled}
         onClick={() => {
           if (inputFileRef.current) {
             inputFileRef.current.click();
